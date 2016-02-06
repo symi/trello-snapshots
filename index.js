@@ -9,23 +9,22 @@ class Snapshotter extends coEvents {
         this._boardName = boardName;
         this._trello = trello(key, token);
         this._snapshotRate = 20 * 60 * 1000; // default every 20 minutes
-        this._saveToFile = true;
-        this._saveRate = 1; // saves everytime
-        this._onSnapshot;
+        this._persistRate = 1; // saves everytime       
         this._count = 0;
-        this._token;
+        this._onSnapshot;        
+        this._onPreCondition;
     }
 
-    *start(onSnapshot, context) { 
+    *start() { 
         let me = this;
-              
-        this._onSnapshot = onSnapshot;
-        this._context = context;
+        
         this._count = 0;
                 
         setImmediate(() => co(function*() { 
             yield* me._snapshot();
         }));
+        
+        if (!this._snapshotRate) return;
         
         this._token = setInterval(() => co(function*() { 
             yield* me._snapshot();
@@ -36,28 +35,61 @@ class Snapshotter extends coEvents {
         if(this._token) {
             clearInterval(this._token);
         }
+    }
+    
+    set snapshotRate(rate) {
+        if (!Number.isInteger(rate)) {
+            throw new Error('Snapshot rate must be an integer');
+        }
         
-        this._onSnapshot = undefined;
-        this._context = undefined;
+        this._snapshotRate = rate;
+    }
+    
+    set persistRate(rate) {
+        if (!Number.isInteger(rate)) {
+            throw new Error('Persist rate must be an integer');
+        }
+        
+        this._persistRate = rate;
+    }
+    
+    set preCondition(handler) {
+        if (typeof handler !== 'function' && handler !== undefined) {
+            throw new Error('Pre-condition handler must be a function or undefined');
+        }
+        
+        this._onPreCondition = handler;
+    }
+    
+    set onSnapshot(handler) {
+        if (typeof handler !== 'function' && handler !== undefined) {
+            throw new Error('Snapshot handler must be a function or undefined');
+        }
+        
+        this._onSnapshot = handler;
     }
 
     *_snapshot() {
-        // todo: pre-shapshot handler/event?
+        this._count++;
+        
+        let snapshotTime = new Date();
+        
+        this.emit('preSnapshot', snapshotTime, this._count);
+        
+        if (this._onPreCondition && this._onPreCondition(this._count, snapshotTime) === false) {
+            return;
+        }
         
         try {
-            let snapshotTime = new Date(),
-                board;
-
-            this._count++;
+            let board;            
             board = yield* this._trello.Board.getBulk(this._boardName);
             
-            if (typeof this._onSnapshot === 'function') {
-                this._onSnapshot.call(this._context, board);
+            this.emit('snapshot', board, snapshotTime, this._count);
+            
+            if (this._onSnapshot) {
+                this._onSnapshot(board, snapshotTime, this._count);
             }
-            
-            self.emit('snapshot', board);
-            
-        } catch(ex) {
+        } catch (ex) {
             console.error(`Error whilst getting snapshot at ${snapshotTime}`);
             console.dir(ex.stack);
             this._count--;
@@ -66,6 +98,4 @@ class Snapshotter extends coEvents {
     }
 }
 
-exports = module.exports = function(key, token, board) {
-    return new Snapshotter(key, token, board);
-};
+exports = module.exports = Snapshotter;

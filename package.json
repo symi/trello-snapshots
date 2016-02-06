@@ -1,17 +1,17 @@
 {
   "name": "trello-snapshots",
   "version": "0.0.0",
-  "description": "Historic serialisation of Trello boards with event polling",
+  "description": "Historic serialisation and event polling of Trello boards",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
-      "type": "git",
-      "url": "git+https://github.com/symi/trello-snapshots.git"
+    "type": "git",
+    "url": "git+https://github.com/symi/trello-snapshots.git"
   },
   "bugs": {
-      "url": "https://github.com/symi/trello-snapshots/issues"
+    "url": "https://github.com/symi/trello-snapshots/issues"
   },
   "homepage": "https://github.com/symi/trello-snapshots#readme",
   "keywords": [
@@ -22,6 +22,8 @@
   "author": "Si Levy <simonjlevy@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "co": "^4.6.0",
+    "co-events": "^0.2.3",
     "trello-objects": "0.0.2"
   }
 }
