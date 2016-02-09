@@ -24,6 +24,7 @@
   "dependencies": {
     "co": "^4.6.0",
     "co-events": "^0.2.3",
+    "mixin": "^0.2.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.11.2",
     "promisify-node": "^0.3.0",

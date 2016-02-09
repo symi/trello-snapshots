@@ -1,10 +1,13 @@
 const co = require('co'),
     trello = require('trello-objects'),
-    coEvents = require('co-events');
+    coEvents = require('co-events'),
+    FileStore = require('./FileStore'),
+    mixin = require('mixin');
 
-class Snapshotter extends coEvents {
-    constructor(key, token, boardName) {
-        super();
+// TODO: check mixin will correctly mimic double extends?!?!
+class Snapshotter extends mixin(coEvents, FileStore) {
+    constructor(key, token, boardName, fileStorePath) {
+        super(fileStorePath || '../Data'); // TODO: dont believe this will work tbh.
         this._boardName = boardName;
         this._trello = trello(key, token);
         this._snapshotRate = 20 * 60 * 1000; // default every 20 minutes
@@ -82,6 +85,11 @@ class Snapshotter extends coEvents {
         try {
             let board;            
             board = yield* this._trello.Board.getBulk(this._boardName);
+            
+            if (this._persistRate !== 0 
+                && (this._count % this._persistRate === 0)) {
+                yield* this.write(board.raw, snapshotTime);
+            }
             
             this.emit('snapshot', board, snapshotTime, this._count);
             
