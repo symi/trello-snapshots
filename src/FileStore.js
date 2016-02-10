@@ -1,5 +1,7 @@
+'use strict';
+
 const promisify = require('promisify-node'),
-    mkdirp = promisify('mkdrip'),
+    mkdirp = promisify('mkdirp'),
     fs = promisify('fs'),
     moment = require('moment'),
     path = require('path'),
@@ -119,7 +121,7 @@ class FileStore {
             fileName = moment().format(DATE_FORMAT);
         }
         
-        yield fs.writeFile(path.join(this._path, fileName, '.json'), JSON.stringify(data, undefined, 4));
+        yield fs.writeFile(path.join(this._path, fileName + '.json'), JSON.stringify(data, undefined, 4));
     }
 }
 

@@ -1,13 +1,14 @@
+'use strict';
+
 const co = require('co'),
     trello = require('trello-objects'),
-    coEvents = require('co-events'),
+    CoEvents = require('co-events'),
     FileStore = require('./FileStore'),
     mixin = require('mixin');
 
-// TODO: check mixin will correctly mimic double extends?!?!
-class Snapshotter extends mixin(coEvents, FileStore) {
+class Snapshotter extends FileStore {
     constructor(key, token, boardName, fileStorePath) {
-        super(fileStorePath || '../Data'); // TODO: dont believe this will work tbh.
+        super(fileStorePath || '../Data');
         this._boardName = boardName;
         this._trello = trello(key, token);
         this._snapshotRate = 20 * 60 * 1000; // default every 20 minutes
@@ -15,6 +16,7 @@ class Snapshotter extends mixin(coEvents, FileStore) {
         this._count = 0;
         this._onSnapshot;        
         this._onPreCondition;
+        this._events = new CoEvents();
     }
 
     *start() { 
@@ -37,6 +39,10 @@ class Snapshotter extends mixin(coEvents, FileStore) {
         if(this._token) {
             clearInterval(this._token);
         }
+    }
+    
+    on(...params) {
+        return this._events.on(...params);
     }
     
     set snapshotRate(rate) {
@@ -76,7 +82,7 @@ class Snapshotter extends mixin(coEvents, FileStore) {
         
         let snapshotTime = new Date();
         
-        this.emit('preSnapshot', snapshotTime, this._count);
+        this._events.emit('preSnapshot', snapshotTime, this._count);
         
         if (this._onPreCondition && this._onPreCondition(this._count, snapshotTime) === false) {
             return;
@@ -91,7 +97,7 @@ class Snapshotter extends mixin(coEvents, FileStore) {
                 yield* this.write(board.raw, snapshotTime);
             }
             
-            this.emit('snapshot', board, snapshotTime, this._count);
+            this._events.emit('snapshot', board, snapshotTime, this._count);
             
             if (this._onSnapshot) {
                 this._onSnapshot(board, snapshotTime, this._count);
