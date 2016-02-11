@@ -19,20 +19,20 @@ class Snapshotter extends FileStore {
         this._events = new CoEvents();
     }
 
-    *start() { 
+    start() { 
         let me = this;
         
         this._count = 0;
                 
         setImmediate(() => co(function*() { 
             yield* me._snapshot();
-        }));
+        }).catch(err => console.dir(err.stack)));
         
         if (!this._snapshotRate) return;
         
         this._token = setInterval(() => co(function*() { 
             yield* me._snapshot();
-        }), this._snapshotRate)
+        }).catch(err => console.dir(err.stack)), this._snapshotRate)
     }
 
     stop() {

@@ -2,10 +2,13 @@
 
 const promisify = require('promisify-node'),
     mkdirp = promisify('mkdirp'),
-    fs = promisify('fs'),
+    fs = require('fs'),
+    pfs = promisify(Object.assign({}, fs)),
     moment = require('moment'),
     path = require('path'),
     DATE_FORMAT = 'YYYY-MM-DD_HH_mm_ss';
+
+
 
 class FileStore {
     constructor(path) {
@@ -17,10 +20,10 @@ class FileStore {
 
         yield mkdirp(this._path);
         
-        const files = yield fs.readdir(this._path);
+        const files = yield pfs.readdir(this._path);
         
         for (const fileName of files) {
-            const stats = yield fs.stat(this._path);
+            const stats = yield pfs.stat(this._path);
             
             if(!stats.isFile()) continue;
             
@@ -108,7 +111,8 @@ class FileStore {
     }
     
     *readLatest() {
-        const fileNames = this._orderFileNames(yield* this._getFileNames());            
+        const fileNames = this._orderFileNames(yield* this._getFileNames());  
+        if (!fileNames.length) return {};          
         return this._getData(fileNames[fileNames.length - 1].name);
     }
     
@@ -121,7 +125,9 @@ class FileStore {
             fileName = moment().format(DATE_FORMAT);
         }
         
-        yield fs.writeFile(path.join(this._path, fileName + '.json'), JSON.stringify(data, undefined, 4));
+        yield mkdirp(this._path);
+        
+        yield pfs.writeFile(path.join(this._path, fileName + '.json'), JSON.stringify(data, undefined, 4))
     }
 }
 
