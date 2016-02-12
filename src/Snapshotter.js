@@ -2,7 +2,6 @@
 
 const co = require('co'),
     trello = require('trello-objects'),
-    CoEvents = require('co-events'),
     FileStore = require('./FileStore'),
     mixin = require('mixin');
 
@@ -16,7 +15,6 @@ class Snapshotter extends FileStore {
         this._count = 0;
         this._onSnapshot;        
         this._onPreCondition;
-        this._events = new CoEvents();
     }
 
     start() { 
@@ -39,10 +37,6 @@ class Snapshotter extends FileStore {
         if(this._token) {
             clearInterval(this._token);
         }
-    }
-    
-    on(...params) {
-        return this._events.on(...params);
     }
     
     set snapshotRate(rate) {
@@ -82,9 +76,9 @@ class Snapshotter extends FileStore {
         
         let snapshotTime = new Date();
         
-        this._events.emit('preSnapshot', snapshotTime, this._count);
+        this.emit('preSnapshot', snapshotTime, this._count);
         
-        if (this._onPreCondition && this._onPreCondition(this._count, snapshotTime) === false) {
+        if (this._onPreCondition && this._onPreCondition(snapshotTime, this._count) === false) {
             return;
         }
         
@@ -97,7 +91,7 @@ class Snapshotter extends FileStore {
                 yield* this.write(board.raw, snapshotTime);
             }
             
-            this._events.emit('snapshot', board, snapshotTime, this._count);
+            this.emit('snapshot', board, snapshotTime, this._count);
             
             if (this._onSnapshot) {
                 this._onSnapshot(board, snapshotTime, this._count);

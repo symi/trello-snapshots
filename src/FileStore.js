@@ -6,12 +6,12 @@ const promisify = require('promisify-node'),
     pfs = promisify(Object.assign({}, fs)),
     moment = require('moment'),
     path = require('path'),
+    CoEvents = require('co-events'),
     DATE_FORMAT = 'YYYY-MM-DD_HH_mm_ss';
 
-
-
-class FileStore {
+class FileStore extends CoEvents {
     constructor(path) {
+        super();
         this._path = path;
     }
     
@@ -127,7 +127,9 @@ class FileStore {
         
         yield mkdirp(this._path);
         
-        yield pfs.writeFile(path.join(this._path, fileName + '.json'), JSON.stringify(data, undefined, 4))
+        yield pfs.writeFile(path.join(this._path, fileName + '.json'), JSON.stringify(data, undefined, 4));
+        
+        this.emit('file-write', data, date);
     }
 }
 
