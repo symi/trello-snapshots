@@ -26,10 +26,10 @@ mySnapshotter.start();
 Creates a new snapshotter. fileStorePath is optional, if not passed in then a local folder to this package is used.
 *TODO: relative paths to caller?*
 
-###.start(): void
+###start(): void
 Starts polling.
 
-###.stop(): void
+###stop(): void
 Stops polling.
 
 ###snapShotRate: Number
@@ -44,14 +44,30 @@ If 0 then snapshots are never saved.
 
 *Default: 1*
 
-###preCondition(handler: function): void
+###preCondition(handler: Function): void
 Setter for the handler to be called when a poll begins before data is pulled.
-Handler function is passed snapshot time (JSDate) and the poll count (Number).
+Handler function is passed snapshot time (Date) and the poll count (Number).
 To stop a poll from continuing return false (Boolean).
 
-###onSnapshot(handler: function): void
+###onSnapshot(handler: Function): void
 Setter for the handler to be called when a poll completes.
-Handler function is passed the board (Trello-Object), snapshot time (JSDate) and the poll count (Number).
+Handler function is passed the board (Trello-Object), snapshot time (Date) and the poll count (Number).
+
+###*write(data: Any, date: Date): void
+Manully write into the file store. Events out 'file-write'.
+
+###*read(date1: Date, date2: ?Date): Array<{ timestamp: Date, data: Any }>
+Reads files from the file store. If only date1 is supplied then only files created with that timestamp are returned.
+If both dates are supplied then files within the date range are returned.
+
+###*readLatest(): { timestamp: Date, data: Any }
+Reads the latest file in the file store.
+
+###*readLastX(count: Number): Array<{ timestamp: Date, data: Any }>
+Reads the last x number of files in the file store.
+
+###*readAll(): Array<{ timestamp: Date, data: Any }>
+Reads all files in the file store
 
 ##Events
 *trello-snapshots* uses co-events and so event handlers can be generator functions.
@@ -62,8 +78,11 @@ Emitted When a poll begins before data is pulled.
 Handlers are passed snapshot time (JSDate) and the poll count (Number).
 
 ###snapshot
-Emiited when a poll completes.
+Emitted when a poll completes.
 Hanlders are passed the board (Trello-Object), snapshot time (JSDate) and the poll count (Number).
+
+###file-write
+Emitted when a file is written to the file store.
 
 ##Contribution
 Feel free to extend, use and contribute to the project! Test coverage should be coming soon. However due to the lack of test coverage, there may be bugs present, please raise an issue or PR.
