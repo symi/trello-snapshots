@@ -23,7 +23,7 @@ class FileStore extends CoEvents {
         const files = yield pfs.readdir(this._path);
         
         for (const fileName of files) {
-            const stats = yield pfs.stat(this._path);
+            const stats = yield pfs.stat(path.join(this._path, fileName));
             
             if(!stats.isFile()) continue;
             
@@ -44,7 +44,7 @@ class FileStore extends CoEvents {
         return fileNames
             .map(fileName => {
                 return { 
-                    timestamp: this._getTimestamp(fileName), 
+                    timestamp: moment(fileName, DATE_FORMAT).toDate(), 
                     name: fileName
                 };
             })
@@ -75,8 +75,9 @@ class FileStore extends CoEvents {
             throw new Error('An invalid second date was provided');
         }
         
-        const start = date1,
-            end = date2,
+        // using moment to remove anything less than a second percision... needs changing!
+        const start = moment(moment(date1).format(DATE_FORMAT), DATE_FORMAT).toDate(),
+            end = moment(moment(date2).format(DATE_FORMAT), DATE_FORMAT).toDate(),
             data = [];
         
         let fileNames = this._orderFileNames(yield* this._getFileNames());  
