@@ -1,0 +1,32 @@
+#trello-snapshots
+
+A snapshotting library for polling Trello and persisting serialised versions of boards to disk.
+
+Can be used as a backup method for saving snapshots of boards *(note - only a large subset of board data is stored)* or
+retrieving data from boards at regular intervals.
+
+##Usage
+To use *trello-snapshots* add the npm package to your project.
+```sh
+npm i trello-snapshots
+```
+You will need to get a Trello API key and token. To allow *trello-snapshots* to pull data you will need a read token. To get your key and token follow the steps: 
+ 1. Sign in to Trello and navigate to [https://trello.com/app-key](https://trello.com/app-key).
+ 2. Navigate to https://trello.com/1/connect?key=...&name=MyApp&response_type=token&scope=read, substituting your key in.
+
+##Basic Usage
+```javascript
+const Snapshotter = require('trello-snapshots')
+
+let mySnapshotter = new Snapshotter(key, token, 'my board', './snapshots');
+mySnapshotter.start();
+```
+##API Reference
+{{>main}}
+
+##Tests
+Run tests using `npm test`.
+
+##Contribution
+Feel free to extend, use and contribute to the project! Test coverage should be coming soon. However due to the lack of test coverage, there may be bugs present, please raise an issue or PR.
+
