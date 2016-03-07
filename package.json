@@ -32,8 +32,10 @@
     "trello-objects": "0.0.2"
   },
   "devDependencies": {
+    "del": "^2.2.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
+    "gulp-jasmine": "^2.3.0",
     "gulp-jsdoc-to-markdown": "^1.2.1"
   }
 }
