@@ -1,11 +1,11 @@
-#trello-snapshots
+# trello-snapshots
 
 A snapshotting library for polling Trello and persisting serialised versions of boards to disk.
 
 Can be used as a backup method for saving snapshots of boards *(note - only a large subset of board data is stored)* or
 retrieving data from boards at regular intervals.
 
-##Usage
+## Usage
 To use *trello-snapshots* add the npm package to your project.
 ```sh
 npm i trello-snapshots
@@ -14,14 +14,14 @@ You will need to get a Trello API key and token. To allow *trello-snapshots* to 
  1. Sign in to Trello and navigate to [https://trello.com/app-key](https://trello.com/app-key).
  2. Navigate to https://trello.com/1/connect?key=...&name=MyApp&response_type=token&scope=read, substituting your key in.
 
-##Basic Usage
+## Basic Usage
 ```javascript
 const Snapshotter = require('trello-snapshots')
 
 let mySnapshotter = new Snapshotter(key, token, 'my board', './snapshots');
 mySnapshotter.start();
 ```
-##API Reference
+## API Reference
 ## Classes
 
 <dl>
@@ -101,7 +101,9 @@ Reads all the files in the file store.
 
 <a name="FileStore+read"></a>
 ### fileStore.read(date1, date2) ⇒ <code>Array.&lt;{timestamp: date, data: json}&gt;</code>
-Reads files from the file store. If only date1 is supplied then only files created with that timestamp are returned. If both dates are supplied then files within the date range are returned.
+Reads files from the file store. 
+If only date1 is supplied then only files created with that timestamp are returned. 
+If both dates are supplied then files within the date range are returned.
 
 **Kind**: instance method of <code>[FileStore](#FileStore)</code>  
 **Returns**: <code>Array.&lt;{timestamp: date, data: json}&gt;</code> - The files data and timestamp.  
@@ -168,7 +170,8 @@ Write into the file store. Events out 'file-write'.
 
 <a name="Snapshotter"></a>
 ## Snapshotter ⇐ <code>[FileStore](#FileStore)</code>
-Class representing a snapshotter, contains methods to poll trello and event/return data at set intervals.
+Class representing a snapshotter, contains methods to poll trello 
+and event/return data at set intervals.
 
 **Kind**: global class  
 **Extends:** <code>[FileStore](#FileStore)</code>  
@@ -208,7 +211,8 @@ Create a Snapshotter.
 
 <a name="Snapshotter+snapshotRate"></a>
 ### snapshotter.snapshotRate
-Sets the snapshot rate, the rate at which the snapshotter will poll the trello board.If 0 then .start() will only poll once.
+Sets the snapshot rate, the rate at which the snapshotter will poll the trello board.
+If 0 then .start() will only poll once.
 
 **Kind**: instance property of <code>[Snapshotter](#Snapshotter)</code>  
 **Throws**:
@@ -226,7 +230,8 @@ Sets the snapshot rate, the rate at which the snapshotter will poll the trello b
 
 <a name="Snapshotter+persistRate"></a>
 ### snapshotter.persistRate
-Sets the persist rate, the rate at which the snapshotter save the result from polling the board.If 0 then snapshots are neve saved.
+Sets the persist rate, the rate at which the snapshotter save the result from polling the board.
+If 0 then snapshots are neve saved.
 
 **Kind**: instance property of <code>[Snapshotter](#Snapshotter)</code>  
 **Throws**:
@@ -280,7 +285,8 @@ Setter for the handler to be called when a poll completes.
 
 <a name="Snapshotter+start"></a>
 ### snapshotter.start()
-Starts polling the trello board with the settings defined on the Snapshotter class.Resets count to 0.
+Starts polling the trello board with the settings defined on the Snapshotter class.
+Resets count to 0.
 
 **Kind**: instance method of <code>[Snapshotter](#Snapshotter)</code>  
 **Emits**: <code>[preSnapshot](#event_preSnapshot)</code>, <code>event:snapshots</code>  
@@ -310,7 +316,9 @@ Reads all the files in the file store.
 
 <a name="FileStore+read"></a>
 ### snapshotter.read(date1, date2) ⇒ <code>Array.&lt;{timestamp: date, data: json}&gt;</code>
-Reads files from the file store. If only date1 is supplied then only files created with that timestamp are returned. If both dates are supplied then files within the date range are returned.
+Reads files from the file store. 
+If only date1 is supplied then only files created with that timestamp are returned. 
+If both dates are supplied then files within the date range are returned.
 
 **Kind**: instance method of <code>[Snapshotter](#Snapshotter)</code>  
 **Returns**: <code>Array.&lt;{timestamp: date, data: json}&gt;</code> - The files data and timestamp.  
@@ -414,7 +422,8 @@ Write into the file store. Events out 'file-write'.
 
 <a name="preCondition"></a>
 ## preCondition ⇒ <code>boolean</code>
-preCondition handler, is given the time of the snapshot and count, can return falseto stop the current snapshot from continuing.
+preCondition handler, is given the time of the snapshot and count, can return false
+to stop the current snapshot from continuing.
 
 **Kind**: global typedef  
 **Returns**: <code>boolean</code> - Return false to stop the current snapshot.  
